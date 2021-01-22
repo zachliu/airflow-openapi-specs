@@ -22,12 +22,12 @@ info:
   description: Apache Airflow management API.
   version: '1.0.0'
   license:
-    name: Apache 2.0
-    url: http://www.apache.org/licenses/LICENSE-2.0.html
+    name: MIT
+    url: https://opensource.org/licenses/MIT
   contact:
-    name: Apache Foundation
-    url: http://www.airflow.apache.org
-    email: dev@airflow.apache.org
+    name: Zach Liu
+    url: https://github.com/zachliu
+    email: zach.z.liu@gmail.com
 
 servers:
   - url: /api/v1
@@ -49,9 +49,7 @@ paths:
           content:
             application/json:
               schema:
-                allOf:
-                  - $ref: '#/components/schemas/ConnectionCollection'
-                  - $ref: '#/components/schemas/CollectionInfo'
+                $ref: '#/components/schemas/ConnectionCollection'
         '401':
           $ref: '#/components/responses/Unauthenticated'
         '403':
@@ -160,9 +158,7 @@ paths:
           content:
             application/json:
               schema:
-                allOf:
-                  - $ref: '#/components/schemas/DAGCollection'
-                  - $ref: '#/components/schemas/CollectionInfo'
+                $ref: '#/components/schemas/DAGCollection'
         '401':
           $ref: '#/components/responses/Unauthenticated'
 
@@ -226,9 +222,7 @@ paths:
           content:
             application/json:
               schema:
-                allOf:
-                  - $ref: '#/components/schemas/DAGRunCollection'
-                  - $ref: '#/components/schemas/CollectionInfo'
+                $ref: '#/components/schemas/DAGRunCollection'
         '401':
           $ref: '#/components/responses/Unauthenticated'
 
@@ -312,9 +306,7 @@ paths:
           content:
             application/json:
               schema:
-                allOf:
-                  - $ref: '#/components/schemas/EventLogCollection'
-                  - $ref: '#/components/schemas/CollectionInfo'
+                $ref: '#/components/schemas/EventLogCollection'
         '401':
           $ref: '#/components/responses/Unauthenticated'
         '403':
@@ -423,9 +415,7 @@ paths:
           content:
             application/json:
               schema:
-                allOf:
-                  - $ref: '#/components/schemas/ImportErrorCollection'
-                  - $ref: '#/components/schemas/CollectionInfo'
+                $ref: '#/components/schemas/ImportErrorCollection'
         '401':
           $ref: '#/components/responses/Unauthenticated'
         '403':
@@ -481,9 +471,7 @@ paths:
           content:
             application/json:
               schema:
-                allOf:
-                  - $ref: '#/components/schemas/PoolCollection'
-                  - $ref: '#/components/schemas/CollectionInfo'
+                $ref: '#/components/schemas/PoolCollection'
         '401':
           $ref: '#/components/responses/Unauthenticated'
         '403':
@@ -597,9 +585,7 @@ paths:
           content:
             application/json:
               schema:
-                allOf:
-                  - $ref: '#/components/schemas/TaskInstanceCollection'
-                  - $ref: '#/components/schemas/CollectionInfo'
+                $ref: '#/components/schemas/TaskInstanceCollection'
         '401':
           $ref: '#/components/responses/Unauthenticated'
         '403':
@@ -687,9 +673,7 @@ paths:
           content:
             application/json:
               schema:
-                allOf:
-                  - $ref: '#/components/schemas/VariableCollection'
-                  - $ref: '#/components/schemas/CollectionInfo'
+                $ref: '#/components/schemas/VariableCollection'
         '401':
           $ref: '#/components/responses/Unauthenticated'
         '403':
@@ -830,9 +814,7 @@ paths:
           content:
             application/json:
               schema:
-                allOf:
-                  - $ref: '#/components/schemas/XComCollection'
-                  - $ref: '#/components/schemas/CollectionInfo'
+                $ref: '#/components/schemas/XComCollection'
         '401':
           $ref: '#/components/responses/Unauthenticated'
         '403':
@@ -1108,6 +1090,10 @@ paths:
           $ref: '#/components/responses/PermissionDenied'
 
 components:
+  securitySchemes:
+    basicAuth:     # <-- arbitrary name for the security scheme
+      type: http
+      scheme: basic
   # Reusable schemas (data models)
   schemas:
     # Database entities
@@ -1157,14 +1143,13 @@ components:
           readOnly: true
         root_dag_id:
           type: string
+          nullable: true
           readOnly: true
         is_paused:
-          type: string
-        is_subdag:
-          type: string
+          type: boolean
           readOnly: true
-        is_active:
-          type: string
+        is_subdag:
+          type: boolean
           readOnly: true
         fileloc:
           type: string
@@ -1172,12 +1157,17 @@ components:
         owners:
           type: string
           readOnly: true
+          items:
+            type: string
         description:
+          type: string
+          nullable: true
+          readOnly: true
+        file_token:
           type: string
           readOnly: true
         schedule_interval:
-          oneOf:
-            - $ref: '#/components/schemas/ScheduleInterval'
+          $ref: '#/components/schemas/ScheduleInterval'
           readOnly: true
         tags:
           type: array
@@ -1188,10 +1178,12 @@ components:
     DAGCollection:
       type: object
       properties:
-        dag_model:
+        dags:
           type: array
           items:
             $ref: '#/components/schemas/DAG'
+        total_entries:
+          type: integer
 
     DAGRun:
       type: object
@@ -1680,21 +1672,25 @@ components:
         - $ref: '#/components/schemas/RelativeDelta'
         - $ref: '#/components/schemas/CronExpression'
       discriminator:
-        propertyName: objectType
+        propertyName: __type
 
     TimeDelta:
       type: object
+      required:
+        - __type
       properties:
-        objectType: {type: string}
+        __type: {type: string}
         days: {type: integer}
         seconds: {type: integer}
-        microsecond: {type: integer}
+        microseconds: {type: integer}
 
     RelativeDelta:
       # TODO: Why we need these fields?
       type: object
+      required:
+        - __type
       properties:
-        objectType: {type: string}
+        __type: {type: string}
         years: {type: integer}
         months: {type: integer}
         days: {type: integer}
@@ -1713,8 +1709,10 @@ components:
 
     CronExpression:
       type: object
+      required:
+        - __type
       properties:
-        objectType: {type: string}
+        __type: {type: string}
         value: {type: string}
 
     Timezone:
@@ -2046,7 +2044,8 @@ components:
 
 # The API will provide support for plugins to support various authorization mechanisms.
 # Detailed information will be available in the plugin specification.
-security: []
+security:
+  - basicAuth: []
 
 tags:
   - name: Config
