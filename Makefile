@@ -12,4 +12,4 @@ generate: check_version
 		-g python \
 		-o ../airflow-python-sdk/ \
 		--package-name airflow_python_sdk \
-		--artifact-version $(VERSION)
+		-p packageVersion=$(VERSION)
