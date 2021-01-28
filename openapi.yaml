@@ -1945,7 +1945,7 @@ components:
       in: path
       name: dag_id
       schema:
-        type: integer
+        type: string
       required: true
       description: The DAG ID.
 
