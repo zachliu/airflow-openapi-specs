@@ -203,6 +203,36 @@ paths:
         '404':
           $ref: '#/components/responses/NotFound'
 
+  /dags/{dag_id}/clearTaskInstances:
+    parameters:
+      - $ref: '#/components/parameters/DAGID'
+    post:
+      summary: Clear a set of task instances
+      description: |
+        Clears a set of task instances associated with the DAG for a specified date range.
+      operationId: clearTaskInstances
+      tags: [DAG]
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ClearTaskInstance'
+        description: Parameters of action
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskInstanceReferenceCollection'
+          description: Successful response.
+        "401":
+          $ref: '#/components/responses/Unauthenticated'
+        "403":
+          $ref: '#/components/responses/PermissionDenied'
+        "404":
+          $ref: '#/components/responses/NotFound'
+
   /dags/{dag_id}/dagRuns:
     parameters:
       - $ref: '#/components/parameters/DAGID'
@@ -1217,6 +1247,41 @@ components:
           items:
             $ref: '#/components/schemas/DAGRun'
 
+    ClearTaskInstance:
+      properties:
+        dry_run:
+          default: true
+          description: |
+            If set, don't actually run this operation. The response will contain a list of task instances
+            planned to be cleaned, but not modified in any way.
+          type: boolean
+        end_date:
+          description: The maximum execution date to clear.
+          format: datetime
+          type: string
+        include_parentdag:
+          description: Clear tasks in the parent dag of the subdag.
+          type: boolean
+        include_subdags:
+          description: Clear tasks in subdags and clear external tasks indicated by ExternalTaskMarker.
+          type: boolean
+        only_failed:
+          default: true
+          description: Only clear failed tasks.
+          type: boolean
+        only_running:
+          default: false
+          description: Only clear running tasks.
+          type: boolean
+        reset_dag_runs:
+          description: Set state of DAG runs to RUNNING.
+          type: boolean
+        start_date:
+          description: The minimum execution date to clear.
+          format: datetime
+          type: string
+      type: object
+
     EventLog:
       type: object
       properties:
@@ -1413,6 +1478,34 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/TaskInstance'
+
+    TaskInstanceReference:
+      type: object
+      properties:
+        dag_id:
+          description: The DAG ID.
+          readOnly: true
+          type: string
+        dag_run_id:
+          description: The DAG run ID.
+          readOnly: true
+          type: string
+        execution_date:
+          format: datetime
+          readOnly: true
+          type: string
+        task_id:
+          description: The task ID.
+          readOnly: true
+          type: string
+
+    TaskInstanceReferenceCollection:
+      type: object
+      properties:
+        task_instances:
+          items:
+            $ref: '#/components/schemas/TaskInstanceReference'
+          type: array
 
     VariableCollectionItem:
       # Divided into two schemas for sensitive data protection
