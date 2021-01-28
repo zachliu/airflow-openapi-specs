@@ -13,3 +13,8 @@ generate: check_version
 		-o ../airflow-python-sdk/ \
 		--package-name airflow_python_sdk \
 		-p packageVersion=$(VERSION)
+
+.PHONY: json2yaml
+json2yaml:
+	# https://github.com/mikefarah/yq
+	yq eval -P api_v1_openapi.json > api_v1_openapi.yaml
