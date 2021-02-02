@@ -233,6 +233,36 @@ paths:
         "404":
           $ref: '#/components/responses/NotFound'
 
+  /dags/{dag_id}/updateTaskInstancesState:
+    parameters:
+      - $ref: '#/components/parameters/DAGID'
+    post:
+      summary: Set a state of task instances
+      description: |
+        Updates the state for multiple task instances simultaneously.
+      operationId: updateTaskInstancesState
+      tags: [DAG]
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateTaskInstancesState'
+        description: Parameters of action
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskInstanceReferenceCollection'
+          description: Success.
+        "401":
+          $ref: '#/components/responses/Unauthenticated'
+        "403":
+          $ref: '#/components/responses/PermissionDenied'
+        "404":
+          $ref: '#/components/responses/NotFound'
+
   /dags/{dag_id}/dagRuns:
     parameters:
       - $ref: '#/components/parameters/DAGID'
@@ -1279,6 +1309,41 @@ components:
         start_date:
           description: The minimum execution date to clear.
           format: datetime
+          type: string
+      type: object
+
+    UpdateTaskInstancesState:
+      properties:
+        dry_run:
+          default: true
+          description: |
+            If set, don't actually run this operation. The response will contain a list of task instances
+            planned to be affected, but won't be modified in any way.
+          type: boolean
+        execution_date:
+          description: The execution date.
+          format: datetime
+          type: string
+        include_downstream:
+          description: If set to true, downstream tasks are also affected.
+          type: boolean
+        include_future:
+          description: If set to True, also tasks from future DAG Runs are affected.
+          type: boolean
+        include_past:
+          description: If set to True, also tasks from past DAG Runs are affected.
+          type: boolean
+        include_upstream:
+          description: If set to true, upstream tasks are also affected.
+          type: boolean
+        new_state:
+          description: Expected new state.
+          enum:
+            - success
+            - failed
+          type: string
+        task_id:
+          description: The task ID.
           type: string
       type: object
 
