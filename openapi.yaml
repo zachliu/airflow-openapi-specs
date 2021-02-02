@@ -276,6 +276,12 @@ paths:
       parameters:
         - $ref: '#/components/parameters/PageLimit'
         - $ref: '#/components/parameters/PageOffset'
+        - $ref: '#/components/parameters/FilterExecutionDateGTE'
+        - $ref: '#/components/parameters/FilterExecutionDateLTE'
+        - $ref: '#/components/parameters/FilterStartDateGTE'
+        - $ref: '#/components/parameters/FilterStartDateLTE'
+        - $ref: '#/components/parameters/FilterEndDateGTE'
+        - $ref: '#/components/parameters/FilterEndDateLTE'
       responses:
         '200':
           description: List of DAG Runs.
@@ -285,6 +291,34 @@ paths:
                 $ref: '#/components/schemas/DAGRunCollection'
         '401':
           $ref: '#/components/responses/Unauthenticated'
+
+    post:
+      summary: Trigger a new DAG run
+      operationId: triggerDagRun
+      tags: [DAGRun]
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DAGRun'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DAGRun'
+          description: Success.
+        "400":
+          $ref: '#/components/responses/BadRequest'
+        "401":
+          $ref: '#/components/responses/Unauthenticated'
+        "403":
+          $ref: '#/components/responses/PermissionDenied'
+        "404":
+          $ref: '#/components/responses/NotFound'
+        "409":
+          $ref: '#/components/responses/AlreadyExists'
 
   /dags/{dag_id}/dagRuns/{dag_run_id}:
     parameters:
@@ -538,7 +572,7 @@ paths:
           $ref: '#/components/responses/PermissionDenied'
 
     post:
-      summary: Create aa pool
+      summary: Create a pool
       operationId: createPool
       tags: [Pool]
       requestBody:
@@ -1254,20 +1288,32 @@ components:
         execution_date:
           type: string
           format: date-time
-          readOnly: true
         start_date:
           type: string
           format: date-time
+          readOnly: true
         end_date:
           type: string
+          readOnly: true
           format: date-time
+          nullable: true
         state:
           $ref: '#/components/schemas/TaskState'
-        run_id:
+          readOnly: true
+        dag_run_id:
           type: string
+          nullable: true
         external_trigger:
           type: boolean
           default: true
+          readOnly: true
+        conf:
+          description: |
+            JSON object describing additional configuration parameters.
+
+            The value of this field can be set only when creating the object. If you try to modify the
+            field of an existing object, the request fails with an BAD_REQUEST error.
+          type: object
 
     DAGRunCollection:
       type: object
@@ -1998,6 +2044,78 @@ components:
       description: The numbers of items to return.
 
     # Database entity fields
+    FilterExecutionDateGTE:
+      in: query
+      name: execution_date_gte
+      schema:
+        type: string
+        format: 'date-time'
+      required: false
+      description: >
+        The date-time notation as defined by
+        [RFC 3339, section 5.6](https://tools.ietf.org/html/rfc3339#section-5.6),
+        E.G. `2017-07-21T17:32:28Z`
+
+    FilterExecutionDateLTE:
+      in: query
+      name: execution_date_lte
+      schema:
+        type: string
+        format: 'date-time'
+      required: false
+      description: >
+        The date-time notation as defined by
+        [RFC 3339, section 5.6](https://tools.ietf.org/html/rfc3339#section-5.6),
+        E.G. `2017-07-21T17:32:28Z`
+
+    FilterStartDateGTE:
+      in: query
+      name: start_date_gte
+      schema:
+        type: string
+        format: 'date-time'
+      required: false
+      description: >
+        The date-time notation as defined by
+        [RFC 3339, section 5.6](https://tools.ietf.org/html/rfc3339#section-5.6),
+        E.G. `2017-07-21T17:32:28Z`
+
+    FilterStartDateLTE:
+      in: query
+      name: start_date_lte
+      schema:
+        type: string
+        format: 'date-time'
+      required: false
+      description: >
+        The date-time notation as defined by
+        [RFC 3339, section 5.6](https://tools.ietf.org/html/rfc3339#section-5.6),
+        E.G. `2017-07-21T17:32:28Z`
+
+    FilterEndDateGTE:
+      in: query
+      name: end_date_gte
+      schema:
+        type: string
+        format: 'date-time'
+      required: false
+      description: >
+        The date-time notation as defined by
+        [RFC 3339, section 5.6](https://tools.ietf.org/html/rfc3339#section-5.6),
+        E.G. `2017-07-21T17:32:28Z`
+
+    FilterEndDateLTE:
+      in: query
+      name: end_date_lte
+      schema:
+        type: string
+        format: 'date-time'
+      required: false
+      description: >
+        The date-time notation as defined by
+        [RFC 3339, section 5.6](https://tools.ietf.org/html/rfc3339#section-5.6),
+        E.G. `2017-07-21T17:32:28Z`
+
     ConnectionID:
       in: path
       name: connection_id
