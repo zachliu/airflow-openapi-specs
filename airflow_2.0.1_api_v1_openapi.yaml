@@ -228,12 +228,12 @@ info:
 
   version: '1.0.0'
   license:
-    name: MIT
-    url: https://opensource.org/licenses/MIT
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
   contact:
-    name: Zach Liu
-    url: https://github.com/zachliu
-    email: zach.z.liu@gmail.com
+    name: Apache Software Foundation
+    url: https://airflow.apache.org
+    email: dev@airflow.apache.org
 
 servers:
   - url: /api/v1
@@ -256,7 +256,9 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ConnectionCollection'
+                allOf:
+                  - $ref: '#/components/schemas/ConnectionCollection'
+                  - $ref: '#/components/schemas/CollectionInfo'
         '401':
           $ref: '#/components/responses/Unauthenticated'
         '403':
@@ -347,7 +349,7 @@ paths:
       tags: [Connection]
       responses:
         '204':
-          description: No content success.
+          description: Success.
         '400':
           $ref: '#/components/responses/BadRequest'
         '401':
@@ -372,7 +374,9 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/DAGCollection'
+                allOf:
+                  - $ref: '#/components/schemas/DAGCollection'
+                  - $ref: '#/components/schemas/CollectionInfo'
         '401':
           $ref: '#/components/responses/Unauthenticated'
 
@@ -522,7 +526,9 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/DAGRunCollection'
+                allOf:
+                  - $ref: '#/components/schemas/DAGRunCollection'
+                  - $ref: '#/components/schemas/CollectionInfo'
         '401':
           $ref: '#/components/responses/Unauthenticated'
 
@@ -576,7 +582,9 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/DAGRunCollection'
+                allOf:
+                  - $ref: '#/components/schemas/DAGRunCollection'
+                  - $ref: '#/components/schemas/CollectionInfo'
         '400':
           $ref: '#/components/responses/BadRequest'
         '401':
@@ -615,7 +623,7 @@ paths:
       tags: [DAGRun]
       responses:
         '204':
-          description: No content success.
+          description: Success.
         '400':
           $ref: '#/components/responses/BadRequest'
         '401':
@@ -642,13 +650,13 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/EventLogCollection'
+                allOf:
+                  - $ref: '#/components/schemas/EventLogCollection'
+                  - $ref: '#/components/schemas/CollectionInfo'
         '401':
           $ref: '#/components/responses/Unauthenticated'
         '403':
           $ref: '#/components/responses/PermissionDenied'
-        '404':
-          $ref: '#/components/responses/NotFound'
 
   /eventLogs/{event_log_id}:
     parameters:
@@ -688,7 +696,9 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ImportErrorCollection'
+                allOf:
+                  - $ref: '#/components/schemas/ImportErrorCollection'
+                  - $ref: '#/components/schemas/CollectionInfo'
         '401':
           $ref: '#/components/responses/Unauthenticated'
         '403':
@@ -728,11 +738,13 @@ paths:
         - $ref: '#/components/parameters/PageOffset'
       responses:
         '200':
-          description: Success.
+          description: List of pools.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/PoolCollection'
+                allOf:
+                  - $ref: '#/components/schemas/PoolCollection'
+                  - $ref: '#/components/schemas/CollectionInfo'
         '401':
           $ref: '#/components/responses/Unauthenticated'
         '403':
@@ -825,7 +837,7 @@ paths:
       tags: [Pool]
       responses:
         '204':
-          description: No content success.
+          description: Success.
         '400':
           $ref: '#/components/responses/BadRequest'
         '401':
@@ -850,7 +862,6 @@ paths:
       - $ref: '#/components/parameters/FilterState'
       - $ref: '#/components/parameters/FilterPool'
       - $ref: '#/components/parameters/FilterQueue'
-
     get:
       summary: List task instances
       description: >
@@ -868,7 +879,9 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/TaskInstanceCollection'
+                allOf:
+                  - $ref: '#/components/schemas/TaskInstanceCollection'
+                  - $ref: '#/components/schemas/CollectionInfo'
         '401':
           $ref: '#/components/responses/Unauthenticated'
         '403':
@@ -923,7 +936,9 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/TaskInstanceCollection'
+                allOf:
+                  - $ref: '#/components/schemas/TaskInstanceCollection'
+                  - $ref: '#/components/schemas/CollectionInfo'
         '401':
           $ref: '#/components/responses/Unauthenticated'
         '403':
@@ -947,7 +962,9 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/VariableCollection'
+                allOf:
+                  - $ref: '#/components/schemas/VariableCollection'
+                  - $ref: '#/components/schemas/CollectionInfo'
         '401':
           $ref: '#/components/responses/Unauthenticated'
         '403':
@@ -1040,7 +1057,7 @@ paths:
       tags: [Variable]
       responses:
         '204':
-          description: No content success.
+          description: Success.
         '400':
           $ref: '#/components/responses/BadRequest'
         '401':
@@ -1074,7 +1091,9 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/XComCollection'
+                allOf:
+                  - $ref: '#/components/schemas/XComCollection'
+                  - $ref: '#/components/schemas/CollectionInfo'
         '401':
           $ref: '#/components/responses/Unauthenticated'
         '403':
@@ -1316,6 +1335,7 @@ paths:
                 smtp_host = localhost
                 smtp_mail_from =  airflow@example.com
 
+
         '401':
           $ref: '#/components/responses/Unauthenticated'
         '403':
@@ -1351,6 +1371,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/VersionInfo'
+
 
 components:
   # Reusable schemas (data models)
@@ -1474,8 +1495,6 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/DAG'
-        total_entries:
-          type: integer
 
     DAGRun:
       type: object
@@ -1533,6 +1552,8 @@ components:
 
             The value of this field can be set only when creating the object. If you try to modify the
             field of an existing object, the request fails with an BAD_REQUEST error.
+      required:
+        - dag_id
 
     DAGRunCollection:
       type: object
@@ -1616,7 +1637,7 @@ components:
         stack_trace:
           type: string
           readOnly: true
-          description: The full stackstrace.
+          description: The full stackstrace..
 
     ImportErrorCollection:
       type: object
@@ -1655,6 +1676,7 @@ components:
           readOnly: true
           nullable: true
 
+
     Pool:
       description: The pool
       type: object
@@ -1691,6 +1713,7 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Pool'
+
 
     SLAMiss:
       type: object
@@ -2317,7 +2340,6 @@ components:
           description:
             The value can be repeated to retrieve multiple matching values (OR condition).
 
-
     # Common data type
     ScheduleInterval:
       description: |
@@ -2636,7 +2658,6 @@ components:
         type: string
       required: true
       description: The XCom key.
-
     # Filter
     FilterExecutionDateGTE:
       in: query
@@ -2649,7 +2670,6 @@ components:
         Returns objects greater or equal to the specified date.
 
         This can be combined with execution_date_lte parameter to receive only the selected period.
-
     FilterExecutionDateLTE:
       in: query
       name: execution_date_lte
@@ -2661,7 +2681,6 @@ components:
         Returns objects less than or equal to the specified date.
 
         This can be combined with execution_date_gte parameter to receive only the selected period.
-
     FilterStartDateGTE:
       in: query
       name: start_date_gte
@@ -2673,7 +2692,6 @@ components:
         Returns objects greater or equal the specified date.
 
         This can be combined with start_date_lte parameter to receive only the selected period.
-
     FilterStartDateLTE:
       in: query
       name: start_date_lte
@@ -2685,7 +2703,6 @@ components:
         Returns objects less or equal the specified date.
 
         This can be combined with start_date_gte parameter to receive only the selected period.
-
     FilterEndDateGTE:
       in: query
       name: end_date_gte
@@ -2697,7 +2714,6 @@ components:
         Returns objects greater or equal the specified date.
 
         This can be combined with start_date_lte parameter to receive only the selected period.
-
     FilterEndDateLTE:
       in: query
       name: end_date_lte
@@ -2709,7 +2725,6 @@ components:
         Returns objects less than or equal to the specified date.
 
         This can be combined with start_date_gte parameter to receive only the selected period.
-
     FilterDurationGTE:
       in: query
       name: duration_gte
@@ -2720,7 +2735,6 @@ components:
         Returns objects greater than or equal to the specified values.
 
         This can be combined with duration_lte parameter to receive only the selected period.
-
     FilterDurationLTE:
       in: query
       name: duration_lte
@@ -2731,7 +2745,6 @@ components:
         Returns objects less than or equal to the specified values.
 
         This can be combined with duration_gte parameter to receive only the selected range.
-
     FilterState:
       in: query
       name: state
@@ -2742,7 +2755,6 @@ components:
       required: false
       description:
         The value can be repeated to retrieve multiple matching values (OR condition).
-
     FilterPool:
       in: query
       name: pool
@@ -2753,7 +2765,6 @@ components:
       required: false
       description:
         The value can be repeated to retrieve multiple matching values (OR condition).
-
     FilterQueue:
       in: query
       name: queue
@@ -2876,8 +2887,7 @@ components:
 
 # The API will provide support for plugins to support various authorization mechanisms.
 # Detailed information will be available in the plugin specification.
-security:
-  - Basic: []
+security: []
 
 tags:
   - name: Config
