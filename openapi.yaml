@@ -1909,7 +1909,7 @@ components:
               readOnly: true
               nullable: true
             dag_run_timeout:
-              nullable: true
+              nullable: true  # This nullable is useless, see TimeDelta below
               $ref: '#/components/schemas/TimeDelta'
             doc_md:
               type: string
@@ -2336,6 +2336,7 @@ components:
     TimeDelta:
       description: Time delta
       type: object
+      nullable: true  # https://github.com/OAI/OpenAPI-Specification/issues/1368
       required:
         - __type
         - days
