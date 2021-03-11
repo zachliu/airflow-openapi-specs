@@ -2063,11 +2063,14 @@ components:
     TaskCollection:
       type: object
       description: Collection of tasks.
-      properties:
-        tasks:
-          type: array
-          items:
-            $ref: '#/components/schemas/Task'
+      allOf:
+        - type: object
+          properties:
+            tasks:
+              type: array
+              items:
+                $ref: '#/components/schemas/Task'
+        - $ref: '#/components/schemas/CollectionInfo'
 
     # Configuration
     ConfigOption:
